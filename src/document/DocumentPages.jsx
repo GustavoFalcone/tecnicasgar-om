@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { chapterNavigationSections, navigationSections } from './documentManifest.js';
 import { techniqueBlocks } from '../data/techniques.js';
 import { ChecklistBoardVisual, MemoryMapVisual, PostureCoachVisual, ScriptRouteVisual, TechniqueVisual } from './PageVisuals.jsx';
+import EditorialTechniquePage from './editorial/EditorialTechniquePage.jsx';
+import { getEditorialTechniqueConfig } from './editorial/editorialRegistry.js';
 
 const brand = <span className="document-brand"><b>GP</b><i>GARÇOM PROFISSIONAL</i></span>;
 
@@ -49,10 +51,10 @@ function ModulesPage({ page, onNavigate, onPrintAll, printMode, isPreparing }) {
   const revealRoot = useRef(null);
   const modules = [
     { id: 'cover', eyebrow: 'MÓDULO PRINCIPAL', title: '+200 Técnicas para Servir como um Garçom Profissional', meta: '200 técnicas · 10 capítulos', featured: true, number: '01' },
-    { id: 'scripts-cover', eyebrow: 'BÔNUS 01', title: '30 Roteiros Práticos de Serviço', meta: '30 roteiros aplicáveis', number: '02' },
-    { id: 'memory-cover', eyebrow: 'BÔNUS 02', title: 'Memorização e Agilidade', meta: '12 treinos mentais', number: '03' },
-    { id: 'checklists-cover', eyebrow: 'BÔNUS 03', title: 'Checklists, Postura e Presença', meta: '15 checklists · 10 aulas', number: '04' },
-    { id: 'certificate', eyebrow: 'BÔNUS 04', title: 'Certificado de Conclusão', meta: 'Certificado A4', number: '05' }
+    { id: 'scripts-cover', eyebrow: 'BÔNUS 01', title: '30 Roteiros Práticos de Serviço', meta: '30 roteiros', image: '/assets/editorial/chapter-fluxo.webp', number: '02' },
+    { id: 'memory-cover', eyebrow: 'BÔNUS 02', title: 'Memorização e Agilidade', meta: '12 treinos', image: '/assets/editorial/bonus-memorizacao.webp', number: '03' },
+    { id: 'checklists-cover', eyebrow: 'BÔNUS 03', title: 'Checklists, Postura e Presença', meta: '25 materiais', image: '/assets/editorial/bonus-checklists.webp', number: '04' },
+    { id: 'certificate', eyebrow: 'BÔNUS 04', title: 'Certificado de Conclusão', meta: 'Certificado A4', image: '/assets/editorial/chapter-refinamento.webp', number: '05' }
   ];
 
   useEffect(() => {
@@ -80,12 +82,12 @@ function ModulesPage({ page, onNavigate, onPrintAll, printMode, isPreparing }) {
         <div className="modules-grid">
           {modules.map((module, index) => module.featured ? (
             <button key={module.id} className="module-entry featured reveal-item" data-reveal style={{ '--reveal-order': index + 1 }} onClick={() => !printMode && onNavigate(module.id)} disabled={printMode}>
-              <div className="module-featured-copy"><span className="module-entry-number">{module.number}</span><small>{module.eyebrow}</small><h2>{module.title}</h2><strong>{module.meta}</strong><i>{printMode ? 'INCLUSO NO MATERIAL' : 'ACESSAR O MÓDULO →'}</i></div>
-              <figure className="module-featured-art"><img src="/assets/editorial/module-principal.webp" alt="Apresentação visual do manual com mais de 200 técnicas para garçons" loading="eager" decoding="async" /></figure>
+              <div className="module-featured-copy"><span className="module-entry-number">{module.number}</span><small>{module.eyebrow}</small><h2>{module.title}</h2><i>{printMode ? 'INCLUSO NO MATERIAL' : 'ABRIR MANUAL →'}</i></div>
+              <figure className="module-featured-art"><img src="/assets/editorial/module-principal.webp" alt="Apresentação visual do manual com mais de 200 técnicas para garçons" loading="eager" decoding="async" /><div className="module-page-previews"><img src="/assets/editorial/cover.webp" alt="Prévia da capa do manual" /><img src="/assets/waiter/waiter-tray.png" alt="Prévia de técnica com bandeja" /><img src="/assets/waiter/waiter-three-plates.png" alt="Prévia de técnica com pratos" /></div></figure>
             </button>
           ) : (
             <button key={module.id} className="module-entry reveal-item" data-reveal style={{ '--reveal-order': index + 1 }} onClick={() => !printMode && onNavigate(module.id)} disabled={printMode}>
-              <span className="module-entry-number">{module.number}</span><div><small>{module.eyebrow}</small><h2>{module.title}</h2><strong>{module.meta}</strong></div><i>{printMode ? 'INCLUSO' : 'ABRIR →'}</i>
+              <span className="module-entry-number">{module.number}</span><div><small>{module.eyebrow}</small><h2>{module.title}</h2><strong>{module.meta}</strong></div><figure className="module-bonus-art"><img src={module.image} alt={`Prévia de ${module.title}`} loading="lazy" /></figure><i>{printMode ? 'INCLUSO' : 'ABRIR →'}</i>
             </button>
           ))}
         </div>
@@ -98,14 +100,17 @@ function ModulesPage({ page, onNavigate, onPrintAll, printMode, isPreparing }) {
 function CoverPage({ page }) {
   return (
     <PageShell page={page} className="cover-sheet">
-      <div className="cover-topline">{brand}<span>EDIÇÃO PROFISSIONAL • 2026</span></div>
-      <div className="cover-visual"><img src={page.image} alt="Garçom profissional em serviço refinado" /></div>
-      <div className="cover-copy">
-        <span className="cover-edition">MANUAL VISUAL • A4</span>
-        <h1><em>+200</em> Técnicas para Servir como um <strong>Garçom Profissional</strong></h1>
-        <p>Um guia visual e prático para ganhar segurança, agilidade e presença em qualquer salão.</p>
-        <div className="cover-facts"><span><b>200</b> técnicas</span><span><b>30</b> roteiros</span><span><b>37</b> materiais bônus</span></div>
-      </div>
+      <div className="cover-topline">{brand}<span>MANUAL TÉCNICO VISUAL · 2026</span></div>
+      <section className="cover-blueprint">
+        <div className="cover-title-block"><span className="cover-edition">EDIÇÃO PROFISSIONAL · A4</span><h1><em>+200</em><span>Técnicas para Servir como um</span><strong>Garçom Profissional</strong></h1><p>Agilidade, elegância, postura e segurança em situações reais do serviço.</p></div>
+        <figure className="cover-waiter"><span>POSTURA · PRESENÇA · CONTROLE</span><img src="/assets/waiter/master-waiter.png" alt="Garçom profissional em postura segura" /></figure>
+        <aside className="cover-detail cover-detail-tray"><figure><img src="/assets/waiter/waiter-tray.png" alt="Detalhe técnico de transporte de bandeja" /></figure><span><b>01</b>BANDEJA</span></aside>
+        <aside className="cover-detail cover-detail-plates"><figure><img src="/assets/waiter/waiter-three-plates.png" alt="Detalhe técnico de transporte de pratos" /></figure><span><b>02</b>PRATOS</span></aside>
+        <aside className="cover-detail cover-detail-posture"><figure><img src="/assets/waiter/waiter-posture-correct.png" alt="Detalhe técnico de postura profissional" /></figure><span><b>03</b>POSTURA</span></aside>
+        <svg className="cover-indicators" viewBox="0 0 1000 1180" aria-hidden="true"><path d="M180 805C320 780 415 735 540 620"/><path d="M205 980C360 955 505 900 675 760"/><path d="M775 245C745 345 735 430 748 520"/><circle cx="540" cy="620" r="8"/><circle cx="675" cy="760" r="8"/><circle cx="748" cy="520" r="8"/></svg>
+        <div className="cover-technical-axis"><i/><span>LEITURA VISUAL RÁPIDA</span><i/></div>
+      </section>
+      <div className="cover-facts"><span><b>200</b> técnicas visuais</span><span><b>30</b> roteiros práticos</span><span><b>+</b> materiais complementares</span></div>
     </PageShell>
   );
 }
@@ -177,6 +182,7 @@ function ChapterPage({ page }) {
 
 function TechniquePage({ page, progress, toggleInList, printMode }) {
   const item = page.data;
+  if (getEditorialTechniqueConfig(item.id)) return <EditorialTechniquePage page={page} progress={progress} toggleInList={toggleInList} printMode={printMode} />;
   const done = progress.completedTechniques.includes(item.id);
   return (
     <PageShell page={page} printMode={printMode}>
